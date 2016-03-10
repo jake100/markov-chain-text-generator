@@ -16,63 +16,52 @@ import java.util.Scanner;
 public class Generator {
 	String previous = "";
 	String curWord = "";
-	int numWordsMin = 2;
-	int numWordsMax = 8;
+	int numWordsMin = 3;
+	int numWordsMax = 12;
 	Random rnd = new Random();
+	FirstGenerator firstGen;
 	public Hashtable<String, ArrayList<Word>> pairs = new Hashtable<String, ArrayList<Word>>();
-	public Generator()
+	public Generator(String string)
 	{
-		
+		firstGen = new FirstGenerator(string);
+		createTable(string);
 	}
-	public String generate(String string)
+	public String generate()
 	{
 		String generatedText = "";
-		createTable(string);
 		int numWords = randomizeNumWords();
 		for (int i = 0; i < numWords; i++) {
 			if(generatedText.equals(""))
 			{
-				ArrayList<String> keys = new ArrayList<String>(pairs.keySet());
 				
-				curWord = keys.get(rnd.nextInt(keys.size()));
+				curWord = firstGen.generate();
 				generatedText += curWord;
 				
 			}
 			else
 			{
-				generatedText += " ";
 				ArrayList<Word> words = pairs.get(curWord);
-				double[] values = new double[words.size()];
-				for (int j = 0; j < values.length; j++) {
-					values[j] = words.get(j).num;
-				}
-				if(values.length != 0)curWord = words.get(rouletteSelect(values)).s;
-				else
+				
+				if(words != null)
 				{
-					String[] wordValues = (String[]) pairs.values().toArray();
-					curWord = wordValues[rnd.nextInt(values.length)];
+					generatedText += " ";
+					double[] values = new double[words.size()];
+					for (int j = 0; j < values.length; j++) {
+						values[j] = words.get(j).num;
+					}
+					if(values.length != 0)curWord = words.get(Util.rouletteSelect(values)).s;
+					else
+					{
+						String[] wordValues = (String[]) pairs.values().toArray();
+						curWord = wordValues[rnd.nextInt(values.length)];
+					}
+					generatedText += curWord;
 				}
-				generatedText += curWord;
 			}
 		}
 		return generatedText;
 	}
-	public static void main(String[] args)
-	{
-		new Generator();
-	}
-	public int rouletteSelect(double[] weight) {
-		double weight_sum = 0;
-		for(int i = 0; i < weight.length; i++) {
-			weight_sum += weight[i];
-		}
-		double value = rnd.nextDouble() * weight_sum;	
-		for(int i = 0; i < weight.length; i++) {		
-			value -= weight[i];		
-			if(value <= 0) return i;
-		}
-		return weight.length - 1;
-	}
+
 	public int randomizeNumWords()
 	{
 		return rnd.nextInt((numWordsMax - numWordsMin) + 1) + numWordsMin;

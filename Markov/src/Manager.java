@@ -2,13 +2,14 @@ import java.util.ArrayList;
 
 public class Manager {
 	int numSentances = 10;
-	Generator generator = new Generator();
+	Generator generator;
 	String[] strings = new String[numSentances];
 	public Manager()
 	{
 		String text = Load.load("res/text.txt");
+		generator = new Generator(text);
 		for (int i = 0; i < numSentances; i++) {
-			strings[i] = generator.generate(text);
+			strings[i] = generator.generate();
 		}
 		manage();
 		for (int i = 0; i < strings.length; i++) {
@@ -42,6 +43,7 @@ public class Manager {
 					|| string.endsWith(":")|| string.endsWith(";")
 					|| string.endsWith("I'll get")|| string.endsWith("You'll get")
 					|| string.endsWith("Don't be")|| string.endsWith("You're totally")
+					|| string.startsWith("With.")
 					|| string.matches("^\\w*[\\.\\?\\!]")) || string.matches("[A-Z]+[a-z']+[\\.\\?\\!]*$"))
 			{
 				if(!string.matches("[\\.\\?\\!\\,]$"))
